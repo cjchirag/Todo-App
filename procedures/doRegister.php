@@ -18,10 +18,10 @@ if (!empty($user)) {
   redirect('./register.php');
 }
 
-//$hashed = password_hash($password, PASSWORD_DEFAULT);
-//$user = addUser($username, $hashed);
-//$session->getFlashBag()->add('success', 'User Added');
-//var_dump($user);
+$hashed = password_hash($password, PASSWORD_DEFAULT);
+$user = addUser($username, $hashed);
+$session->getFlashBag()->add('success', 'User Added');
+var_dump($user);
 
-// saveUserData($user);
+saveUserData($user);
 ?> 

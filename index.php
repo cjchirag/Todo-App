@@ -6,7 +6,6 @@ $page = null;
 
 include 'inc/header.php';
 
-var_dump(getAllUsers());
 ?>
     <div class="col-container actions-container">
 

@@ -34,7 +34,7 @@ function getUserByName($username) {
 
     try {
         $statement = $db->prepare('SELECT * FROM users WHERE username=:username');
-        $statement = $db->bindParam('username', $username);
+        $statement->bindParam('username', $username);
         $statement->execute();
         $user = $statement->fetch();
     } catch (Exception $e) {
