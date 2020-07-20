@@ -33,12 +33,14 @@ include 'inc/header.php';
               Add Task
             </a>
           </li>
+          <?php if($loggedStatus == false): ?>
           <li class="actions-item">
             <a class="actions-link" href="register.php">
               <span class="actions-icon">
                 <svg viewbox="0 0 64 64"><use xlink:href="#user_icon"></use></svg>
               </span>
                 Register
+          <?php endif ?>
 		</div>
 
 <?php include("inc/footer.php"); ?>
