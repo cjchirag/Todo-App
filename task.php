@@ -1,11 +1,21 @@
 <?php
 require_once 'inc/bootstrap.php';
+$user = decodeAuthCookie('auth_user_id');
 
+if (empty($user)) {
+    global $session;
+    $session->getFlashBag()->add('error', 'You must login or register to add an ask');
+    redirect('./index.php');
+}
+
+if (!empty(request()->get('id'))) {
+    $authCheck = isTaskOwner(request()->get('id'));
+}
 $pageTitle = "Task | Time Tracker";
 $page = "task";
 
-if (request()->get('id')) {
-    list($task_id, $task, $status) = getTask(request()->get('id'));
+if (!empty(request()->get('id'))) {
+    list($task_id, $task, $status, $user_id) = getTask(request()->get('id'));
 }
 
 include 'inc/header.php';
@@ -27,13 +37,15 @@ include 'inc/header.php';
             }
             ?>
             <form class="form-container form-add" method="post" action="inc/actions_tasks.php">
+            <input type='hidden' name='user_id' value=<?php echo "$user"; ?> />
                 <table>
                     <tr>
                         <th><label for="task">Task<span class="required">*</span></label></th>
-                        <td><input type="text" id="task" name="task" value="<?php echo htmlspecialchars($task); ?>" /></td>
+                        <td><input type="text" id="task" name="task" value="<?php if (!empty($task)) { echo htmlspecialchars($task); } ?>" /></td>
                     </tr>
                    </table>
                 <?php
+
                 if (!empty($task_id)) {
                     echo "<input type='hidden' name='action' value='update' />";
                     echo "<input type='hidden' name='task_id' value='$task_id' />";

@@ -1,14 +1,19 @@
 <?php
 //task functions
 
-function getTasks($where = null)
+function getTasks($user_id, $status = NULL)
 {
     global $db;
     $query = "SELECT * FROM tasks ";
-    if (!empty($where)) $query .= "WHERE $where";
+    if (!empty($status)) {
+        $query .= "WHERE user_id=:user AND $status";
+    } else {
+        $query .= "WHERE user_id=:user";
+    }
     $query .= " ORDER BY id";
     try {
         $statement = $db->prepare($query);
+        $statement->bindParam('user', $user_id);
         $statement->execute();
         $tasks = $statement->fetchAll();
     } catch (Exception $e) {
@@ -17,20 +22,20 @@ function getTasks($where = null)
     }
     return $tasks;
 }
-function getIncompleteTasks()
+function getIncompleteTasks($user_id)
 {
-    return getTasks('status=0');
+    return getTasks($user_id, 'status=0');
 }
-function getCompleteTasks()
+function getCompleteTasks($user_id)
 {
-    return getTasks('status=1');
+    return getTasks($user_id, 'status=1');
 }
 function getTask($task_id)
 {
     global $db;
 
     try {
-        $statement = $db->prepare('SELECT id, task, status FROM tasks WHERE id=:id');
+        $statement = $db->prepare('SELECT * FROM tasks WHERE id=:id');
         $statement->bindParam('id', $task_id);
         $statement->execute();
         $task = $statement->fetch();
@@ -45,9 +50,10 @@ function createTask($data)
     global $db;
 
     try {
-        $statement = $db->prepare('INSERT INTO tasks (task, status) VALUES (:task, :status)');
+        $statement = $db->prepare('INSERT INTO tasks (task, status, user_id) VALUES (:task, :status, :user_id)');
         $statement->bindParam('task', $data['task']);
         $statement->bindParam('status', $data['status']);
+        $statement->bindParam('user_id', $data['user_id']);
         $statement->execute();
     } catch (Exception $e) {
         echo "Error!: " . $e->getMessage() . "<br />";

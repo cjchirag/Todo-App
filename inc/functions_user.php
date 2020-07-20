@@ -14,7 +14,7 @@ function getAllUsers() {
 
 }
 
-function getUserById ($id) {
+function getUserById($id) {
     global $db;
 
     try {
@@ -59,19 +59,19 @@ function addUser($username, $password) {
     return getUserByName($username);
 }
 
-function updateUserPassword($username, $password) {
+function updateUserPassword($user, $password) {
 
     global $db;
 
     try {
-        $statement = $db->prepare('UPDATE users SET password=:password WHERE username=:username');
+        $statement = $db->prepare('UPDATE users SET password=:password WHERE id=:user');
         $statement->bindParam('password', $password);
-        $statement->bindParam('username', $username);
+        $statement->bindParam('user', $user);
         $statement->execute(); 
     } catch (Exception $e) {
         echo "Error!: " . $e->getMessage() . "<br />";
         return false;
     }
-    return getUserByName($username);
+    return getUserById($user);
 }
 ?>

@@ -4,16 +4,23 @@ require 'inc/bootstrap.php';
 $pageTitle = "Task List | Time Tracker";
 $page = "tasks";
 
-$filter = request()->get('filter');
-if ($filter=='all') {
-    $tasks = getTasks();
-} elseif ($filter=='complete') {
-    $tasks = getCompleteTasks();
-} else {
-    $filter = 'incomplete';
-    $tasks = getIncompleteTasks();
+$user = decodeAuthCookie('auth_user_id');
+
+if (empty($user)) {
+    $session->getFlashBag()->add('error', 'You must login or register an account to use a task list');
 }
 
+$filter = request()->get('filter');
+$tasks = [];
+if ($filter=='all') {
+    $tasks = getTasks($user);
+} elseif ($filter=='complete') {
+    $tasks = getCompleteTasks($user);
+} elseif ($filter == 'incomplete') {
+    $tasks = getIncompleteTasks($user);
+} else {
+    $tasks = getTasks($user);
+}
 include 'inc/header.php';
 ?>
 
@@ -31,14 +38,16 @@ include 'inc/header.php';
 
             <div class="form-container">
                 <ul class="action_filter">
-                    <li<?php if ($filter=='incomplete') echo ' class="on"'; ?>><a href="task_list.php">Incomplete</a></li>
-                    <li<?php if ($filter=='complete') echo ' class="on"'; ?>><a href="task_list.php?filter=complete">Complete</a></li>
-                    <li<?php if ($filter=='all') echo ' class="on"'; ?>><a href="task_list.php?filter=all">All</a></li>
+                    <li class="on"><a href="task_list.php?filter=incomplete">Incomplete</a></li>
+                    <li class="on"><a href="task_list.php?filter=complete">Complete</a></li>
+                    <li class="on"><a href="task_list.php?filter=all">All</a></li>
                 </ul>
                   <table class="items">
                       <tr><th>Status</th><th>Title</th><th>Action</th></tr>
                         <?php
                         foreach ($tasks as $item) {
+                        // An additional layer of security
+                         if (isTaskOwner($item['id'])) {
                             echo "<tr><td>";
                             echo "<input type='checkbox' onChange='javascript:location=\"inc/actions_tasks.php?action=status&task_id=".$item['id'];
                             if (!empty($filter)) {
@@ -60,6 +69,7 @@ include 'inc/header.php';
                             echo "'>Delete</a>";
                             echo "</td></tr>\n";
                         }
+                    }
                         ?>
                   </table>
             </div>
