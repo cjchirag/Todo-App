@@ -6,10 +6,6 @@ $page = null;
 
 include 'inc/header.php';
 
-// var_dump('The user id is ' . decodeAuthCookie('auth_user_id'));
-
-// var_dump(password_verify('cj', getAuthenticatedUser()['password']));
-
 ?>
     <div class="col-container actions-container">
 
